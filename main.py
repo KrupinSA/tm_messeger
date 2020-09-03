@@ -28,15 +28,7 @@ main_logger.warning("Bot запущен")
 dispatcher.logger.warning("Bot запущен")
 params = {}
 connection_error_count = 0
-
-#Test telegram logger
-try:
-    err = 1/0
-except ZeroDivisionError as err:
-    main_logger.error(err)
-    dispatcher.logger.error("Bot произошла ошибка")
-    dispatcher.logger.error(err, exc_info=True)
-
+    
 while True:
   try:
     response = requests.get(url, headers=headers, params=params, timeout=WAITING_TIME)
@@ -71,3 +63,8 @@ while True:
           time.sleep(600)
           continue
       connection_error_count += 1
+  except telegram.error.TelegramError as err:
+      main_logger.error(err)
+      dispatcher.logger.error("Bot произошла ошибка")
+      dispatcher.logger.error(err, exc_info=True)
+ 
