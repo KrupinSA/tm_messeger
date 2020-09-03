@@ -3,6 +3,8 @@ import requests
 import telegram
 import textwrap
 import time
+import teleg_logging
+from telegram.ext import Updater
 
 
 DEVMAN_TOKEN = os.getenv('DEVMAN_TOKEN')
@@ -16,9 +18,24 @@ headers = {
     "Authorization": 'Token {}'.format(DEVMAN_TOKEN)
 }
 
+updater = Updater(token=TG_TOKEN, use_context=True)
+dispatcher = updater.dispatcher
+
 bot = telegram.Bot(token=TG_TOKEN)
+main_logger = teleg_logging.get_logger(__name__)
+dispatcher.logger.addHandler(teleg_logging.get_teleg_handler(bot, CHAT_ID))
+main_logger.warning("Bot запущен")
+dispatcher.logger.warning("Bot запущен")
 params = {}
 connection_error_count = 0
+
+#Test telegram logger
+try:
+    err = 1/0
+except ZeroDivisionError as err:
+    main_logger.error(err)
+    dispatcher.logger.error("Bot произошла ошибка")
+    dispatcher.logger.error(err, exc_info=True)
 
 while True:
   try:
