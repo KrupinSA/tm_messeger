@@ -13,8 +13,6 @@ TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 WAITING_TIME = 91
 
 main_logger = logging.getLogger(__name__)
-updater = Updater(token=TELEGRAM_TOKEN, use_context=True)
-dispatcher = updater.dispatcher
 
 
 class TelegHandler(logging.Handler):
@@ -28,11 +26,7 @@ class TelegHandler(logging.Handler):
         self.bot.send_message(self.chat_id, log)
 
 
-def init_bot():
-    return telegram.Bot(token=TELEGRAM_TOKEN)
-
-
-def main_loop(bot):
+def main_loop(bot, dispatcher):
     url = 'https://dvmn.org/api/long_polling/'
 
     headers = {
@@ -94,7 +88,7 @@ def main():
     console_handler.setLevel(level)
     main_logger.addHandler(console_handler)
 
-    bot = init_bot()
+    bot = telegram.Bot(token=TELEGRAM_TOKEN)
     main_logger.warning("Bot запущен")
 
     # Init ligging to telegram
@@ -102,11 +96,13 @@ def main():
     formatter = logging.Formatter(bot_message_format)
     telegram_handler.setFormatter(formatter)
     telegram_handler.setLevel(level)
+    updater = Updater(token=TELEGRAM_TOKEN, use_context=True)
+    dispatcher = updater.dispatcher
     dispatcher.logger.addHandler(telegram_handler)
 
     dispatcher.logger.warning("Bot запущен")
 
-    main_loop(bot)
+    main_loop(bot, dispatcher)
 
 if __name__ == "__main__":
     main()
